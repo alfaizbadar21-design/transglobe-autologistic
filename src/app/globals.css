@@ -1,26 +1,181 @@
 @import "tailwindcss";
+@plugin "tailwindcss-animate";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* ── Colors ── */
+  --color-background:           hsl(30 6% 6%);
+  --color-foreground:           hsl(38 26% 93%);
+
+  --color-card:                 hsl(30 6% 11%);
+  --color-card-foreground:      hsl(38 26% 93%);
+
+  --color-popover:              hsl(30 6% 11%);
+  --color-popover-foreground:   hsl(38 26% 93%);
+
+  --color-primary:              hsl(41 42% 56%);
+  --color-primary-foreground:   hsl(30 10% 8%);
+
+  --color-secondary:            hsl(30 6% 15%);
+  --color-secondary-foreground: hsl(38 26% 93%);
+
+  --color-muted:                hsl(30 6% 15%);
+  --color-muted-foreground:     hsl(36 12% 64%);
+
+  --color-accent:               hsl(41 34% 18%);
+  --color-accent-foreground:    hsl(41 50% 72%);
+
+  --color-destructive:          hsl(0 60% 45%);
+  --color-destructive-foreground: hsl(38 26% 95%);
+
+  --color-border:               hsl(38 16% 22%);
+  --color-input:                hsl(38 16% 20%);
+  --color-ring:                 hsl(41 42% 56%);
+
+  /* ── Border Radius ── */
+  --radius:    0.25rem;
+  --radius-lg: 0.25rem;
+  --radius-md: calc(0.25rem - 2px);
+  --radius-sm: calc(0.25rem - 4px);
+
+  /* ── Fonts ── */
+  --font-heading: var(--font-playfair), ui-serif, Georgia, serif;
+  --font-body:    var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ── Base ── */
+*, *::before, *::after {
+  border-color: var(--color-border);
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #0E0D0C;
+  color: hsl(38 26% 93%);
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-playfair), ui-serif, Georgia, serif;
+  letter-spacing: -0.01em;
+}
+
+::selection {
+  background: hsl(41 42% 56% / 0.28);
+  color: hsl(38 26% 93%);
+}
+
+/* ── Custom Utilities ── */
+@utility chrome-text {
+  background: linear-gradient(180deg, #E6C977 0%, #C9A961 45%, #9A7B3C 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@utility hairline {
+  border-color: hsl(41 42% 56% / 0.16);
+}
+
+@utility shadow-luxe {
+  box-shadow: 0 1px 2px rgba(0,0,0,0.5), 0 12px 40px -16px rgba(0,0,0,0.7);
+}
+
+@utility shadow-luxe-hover {
+  transition: box-shadow .5s ease, transform .5s ease, border-color .5s ease;
+  &:hover {
+    box-shadow: 0 1px 2px rgba(0,0,0,0.6), 0 24px 60px -18px rgba(0,0,0,0.85);
+    transform: translateY(-4px);
+  }
+}
+
+@utility text-balance {
+  text-wrap: balance;
+}
+/* Ken Burns */
+@keyframes ken-burns {
+  0%   { transform: scale(1.00); }
+  100% { transform: scale(1.05); }
+}
+
+.animate-ken-burns {
+  animation: ken-burns 7s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-ken-burns {
+    animation: none;
+  }
+}
+
+/* Scrollbar hide for horizontal carousels */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+/* How It Works — step content fade */
+@keyframes step-fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-step-fade {
+  animation: step-fade 0.4s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-step-fade {
+    animation: none;
+  }
+}
+
+/* How It Works — content fade */
+@keyframes step-fade {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-step-fade {
+  animation: step-fade 0.4s ease-out;
+}
+
+/* How It Works — image crossfade */
+@keyframes image-fade {
+  from { opacity: 0; transform: scale(1.02); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.animate-image-fade {
+  animation: image-fade 0.4s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-step-fade,
+  .animate-image-fade {
+    animation: none;
+  }
+}
+
+/* Accordion */
+@keyframes accordion-down {
+  from { height: 0; }
+  to { height: var(--radix-accordion-content-height); }
+}
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); }
+  to { height: 0; }
+}
+.animate-accordion-down {
+  animation: accordion-down 0.25s ease-out;
+}
+.animate-accordion-up {
+  animation: accordion-up 0.25s ease-out;
 }
