@@ -179,3 +179,23 @@ h1, h2, h3, h4 {
 .animate-accordion-up {
   animation: accordion-up 0.25s ease-out;
 }
+
+/* ServiceJourney — active step progress bar (fills while autoplay counts down) */
+@keyframes step-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.animate-step-progress {
+  animation: step-progress linear forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-step-progress {
+    animation: none;
+  }
+}

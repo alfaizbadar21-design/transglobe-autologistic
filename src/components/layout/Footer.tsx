@@ -19,6 +19,7 @@ const serviceLinks = [
 ]
 
 const companyLinks = [
+  { label: 'About Us', href: '/about-us' },
   { label: 'How It Works', href: '/how-it-works' },
   { label: 'Gallery', href: '/gallery' },
   { label: 'Intake Hub', href: '/intake-hub' },

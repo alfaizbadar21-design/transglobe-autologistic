@@ -1,21 +1,27 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
-import { cn } from '../lib/utils'
-import type { JourneyStep } from '../lib/journey-data'
+import { cn } from '@/lib/utils'
+import type { JourneyStep } from '@/lib/journey-data'
 
 interface ServiceJourneyProps {
   steps: JourneyStep[]
   cta: { label: string; href: string }
 }
 
+const AUTOPLAY_INTERVAL = 3500
+
 export default function ServiceJourney({ steps, cta }: ServiceJourneyProps) {
   const [activeStepId, setActiveStepId] = useState(steps[0].id)
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+  const [isPaused, setIsPaused] = useState(false)
+
+  const sectionRef = useRef<HTMLDivElement>(null)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -28,8 +34,31 @@ export default function ServiceJourney({ steps, cta }: ServiceJourneyProps) {
   const activeStep = steps.find((s) => s.id === activeStepId) ?? steps[0]
   const activeStepIndex = steps.findIndex((s) => s.id === activeStep.id)
 
+  // ── Autoplay — advances every 3.5s, pauses on hover/manual click ──
+  useEffect(() => {
+    if (prefersReducedMotion || isPaused) return
+
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    timeoutRef.current = setTimeout(() => {
+      const nextIndex = (activeStepIndex + 1) % steps.length
+      setActiveStepId(steps[nextIndex].id)
+    }, AUTOPLAY_INTERVAL)
+
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    }
+  }, [activeStepIndex, isPaused, prefersReducedMotion, steps])
+
+  const handleManualSelect = (id: string) => {
+    setActiveStepId(id)
+  }
+
   return (
-    <div>
+    <div
+      ref={sectionRef}
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
       {/* Desktop step nav */}
       <div className="hidden md:grid grid-cols-6 gap-0">
         {steps.map((step, i) => (
@@ -38,7 +67,7 @@ export default function ServiceJourney({ steps, cta }: ServiceJourneyProps) {
             role="tab"
             aria-selected={activeStepId === step.id}
             aria-label={`Step ${step.number}: ${step.title}`}
-            onClick={() => setActiveStepId(step.id)}
+            onClick={() => handleManualSelect(step.id)}
             className="group relative flex flex-col items-start text-left pt-5 pr-4 focus:outline-none focus-visible:ring-1 focus-visible:ring-[hsl(41_42%_56%)] rounded-sm"
           >
             <span
@@ -47,6 +76,14 @@ export default function ServiceJourney({ steps, cta }: ServiceJourneyProps) {
                 activeStepIndex >= i ? 'bg-[hsl(41_42%_56%)]' : 'bg-[hsl(38_16%_22%)]'
               )}
             />
+            {/* Progress fill for the currently active segment */}
+            {activeStepIndex === i && !prefersReducedMotion && (
+              <span
+                key={`progress-${activeStepId}`}
+                className="absolute top-0 left-0 right-4 h-[2px] bg-white/70 origin-left animate-step-progress"
+                style={{ animationDuration: `${AUTOPLAY_INTERVAL}ms` }}
+              />
+            )}
             <span
               className={cn(
                 'absolute -top-[5px] left-0 w-3 h-3 rounded-full border-2 transition-all duration-300',
@@ -86,7 +123,7 @@ export default function ServiceJourney({ steps, cta }: ServiceJourneyProps) {
               role="tab"
               aria-selected={activeStepId === step.id}
               aria-label={`Step ${step.number}: ${step.title}`}
-              onClick={() => setActiveStepId(step.id)}
+              onClick={() => handleManualSelect(step.id)}
               className={cn(
                 'shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full border text-[13px] font-medium transition-all duration-300',
                 activeStepId === step.id
@@ -108,7 +145,7 @@ export default function ServiceJourney({ steps, cta }: ServiceJourneyProps) {
           className={cn('order-2 lg:order-1', !prefersReducedMotion && 'animate-step-fade')}
         >
           <span className="font-body text-[13px] tracking-[0.2em] text-[hsl(41_42%_56%)]">
-            {activeStep.number} / 06
+            {activeStep.number} / {String(steps.length).padStart(2, '0')}
           </span>
           <h3 className="mt-3 font-heading text-2xl md:text-3xl font-medium text-foreground">
             {activeStep.title}

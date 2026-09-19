@@ -20,6 +20,8 @@ import {
   type CategorySlug,
 } from "../lib/listings-data";
 
+import { getListingSlug } from '@/lib/listings-data'
+
 const categoryTabs = categories.map((c) => ({ slug: c.slug, label: c.title }));
 
 export default function FleetDiscovery() {
@@ -215,7 +217,7 @@ function availabilityLabel(listing: Listing) {
 function FleetCard({ listing }: { listing: Listing }) {
   return (
     <Link
-      href={`/${listing.category}?listing=${listing.id}`}
+     href={`/${listing.category}/${getListingSlug(listing)}`}
       className="group snap-start shrink-0 w-[280px] sm:w-[300px] flex flex-col overflow-hidden rounded-2xl bg-card border border-[hsl(38_16%_22%)] shadow-luxe shadow-luxe-hover"
     >
       {/* Image */}

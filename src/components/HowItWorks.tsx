@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
-import { cn } from '../lib/utils'
-import { procurementSteps, shippingSteps, type JourneyStep } from '../lib/journey-data'
+import { cn } from '@/lib/utils'
+import { procurementSteps, shippingSteps, type JourneyStep } from '@/lib/journey-data'
 
 type JourneyType = 'procurement' | 'shipping'
 
@@ -27,6 +27,8 @@ const journeys: Record<JourneyType, {
   },
 }
 
+const AUTOPLAY_INTERVAL = 3500
+
 // ═══════════════════════════════════════════════════════════════════════════
 // COMPONENT
 // ═══════════════════════════════════════════════════════════════════════════
@@ -35,6 +37,9 @@ export default function HowItWorks() {
   const [activeJourney, setActiveJourney] = useState<JourneyType>('procurement')
   const [activeStepId, setActiveStepId] = useState<string>('discover')
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+  const [isPaused, setIsPaused] = useState(false)
+
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -56,8 +61,31 @@ export default function HowItWorks() {
     setActiveStepId(journeys[journey].steps[0].id)
   }
 
+  const handleManualStepSelect = (id: string) => {
+    setActiveStepId(id)
+  }
+
+  // ── Autoplay — advances step every 3.5s within the current journey ──
+  useEffect(() => {
+    if (prefersReducedMotion || isPaused) return
+
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    timeoutRef.current = setTimeout(() => {
+      const nextIndex = (activeStepIndex + 1) % currentJourney.steps.length
+      setActiveStepId(currentJourney.steps[nextIndex].id)
+    }, AUTOPLAY_INTERVAL)
+
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    }
+  }, [activeStepIndex, activeJourney, isPaused, prefersReducedMotion, currentJourney.steps])
+
   return (
-    <section className="relative bg-[#0E0D0C] border-b border-[hsl(38_16%_18%)] py-16 md:py-24">
+    <section
+      className="relative bg-[#0E0D0C] border-b border-[hsl(38_16%_18%)] py-16 md:py-24"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
       <div className="max-w-7xl mx-auto px-5 sm:px-8">
 
         {/* ── Header ── */}
@@ -114,7 +142,7 @@ export default function HowItWorks() {
                 role="tab"
                 aria-selected={activeStepId === step.id}
                 aria-label={`Step ${step.number}: ${step.title}`}
-                onClick={() => setActiveStepId(step.id)}
+                onClick={() => handleManualStepSelect(step.id)}
                 className="group relative flex flex-col items-start text-left pt-5 pr-4 focus:outline-none focus-visible:ring-1 focus-visible:ring-[hsl(41_42%_56%)] rounded-sm"
               >
                 <span
@@ -123,6 +151,14 @@ export default function HowItWorks() {
                     activeStepIndex >= i ? 'bg-[hsl(41_42%_56%)]' : 'bg-[hsl(38_16%_22%)]'
                   )}
                 />
+                {/* Progress fill for the currently active segment */}
+                {activeStepIndex === i && !prefersReducedMotion && (
+                  <span
+                    key={`progress-${activeJourney}-${activeStepId}`}
+                    className="absolute top-0 left-0 right-4 h-[2px] bg-white/70 origin-left animate-step-progress"
+                    style={{ animationDuration: `${AUTOPLAY_INTERVAL}ms` }}
+                  />
+                )}
                 <span
                   className={cn(
                     'absolute -top-[5px] left-0 w-3 h-3 rounded-full border-2 transition-all duration-300',
@@ -162,7 +198,7 @@ export default function HowItWorks() {
                   role="tab"
                   aria-selected={activeStepId === step.id}
                   aria-label={`Step ${step.number}: ${step.title}`}
-                  onClick={() => setActiveStepId(step.id)}
+                  onClick={() => handleManualStepSelect(step.id)}
                   className={cn(
                     'shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full border text-[13px] font-medium transition-all duration-300',
                     activeStepId === step.id

@@ -35,9 +35,9 @@ const SLIDES: Slide[] = [
     imagePosition: 'center',
     alt: 'Global fleet logistics operations at sunrise',
     eyebrow: 'Global Fleet & Logistics',
-    title: 'Worldwide Fleet Procurement & Logistics',
+    title: 'Global Logistics Mastery & Worldwide Fleet Procurement',
     description:
-      'Source the right assets globally, manage every logistics stage, and deliver them to their destination with confidence.',
+      'Whether you need end-to-end turnkey acquisition or specialized white-glove shipping, we deliver seamless global transit solutions from our Dubai operational hub.',
     primaryCta: { label: 'Request a Consultation', href: '/intake-hub' },
     secondaryCta: { label: 'Explore Our Services', href: '/turnkey-procurement' },
   },
@@ -318,7 +318,8 @@ export default function HeroSlider() {
       })}
 
       {/* ── Content ── */}
-      <div className="relative z-20 h-full max-w-7xl mx-auto px-5 sm:px-8 flex flex-col justify-center pt-16 pb-28 sm:pb-24">
+
+      <div className="relative z-20 h-full max-w-7xl mx-auto px-5 sm:px-8">
         {SLIDES.map((slide, i) => {
           const isActive = i === current
           return (
@@ -326,18 +327,13 @@ export default function HeroSlider() {
               key={slide.id}
               aria-hidden={!isActive}
               className={cn(
-                'absolute inset-x-5 sm:inset-x-8 flex flex-col justify-center transition-all',
-                prefersReducedMotion
-                  ? 'duration-0'
-                  : 'duration-700 ease-out',
-                isActive
+                  'absolute inset-0 flex flex-col justify-center pt-32 md:pt-40 pb-28 sm:pb-24 transition-all',                isActive
                   ? 'opacity-100 translate-y-0 pointer-events-auto'
                   : 'opacity-0 translate-y-4 pointer-events-none'
               )}
-              style={{ top: '50%', transform: isActive ? 'translateY(-50%)' : 'translateY(calc(-50% + 1rem)' }}
             >
               {/* Eyebrow */}
-              <span className="inline-flex w-fit items-center gap-2.5 mb-5 md:mb-7 text-[10px] sm:text-[11px] font-semibold tracking-[0.28em] uppercase text-white/75">
+              <span className="mt-10 inline-flex w-fit items-center gap-2.5 mb-5 md:mb-7 text-[10px] sm:text-[11px] font-semibold tracking-[0.28em] uppercase text-white/75">
                 <span className="h-px w-8 bg-[hsl(41_42%_56%_/_0.7)]" />
                 {slide.eyebrow}
               </span>
@@ -348,7 +344,7 @@ export default function HeroSlider() {
               </h1>
 
               {/* Description */}
-              <p className="mt-5 md:mt-6 text-white/78 text-sm md:text-base lg:text-lg leading-relaxed max-w-[580px]">
+              <p className="mt-6 md:mt-7 text-white/78 text-sm md:text-base lg:text-lg leading-relaxed max-w-[580px]">
                 {slide.description}
               </p>
 
@@ -373,7 +369,6 @@ export default function HeroSlider() {
           )
         })}
       </div>
-
       {/* ── Controls + Indicator ── */}
       <div className="absolute bottom-8 sm:bottom-10 right-5 sm:right-8 z-30 flex items-end gap-6">
 

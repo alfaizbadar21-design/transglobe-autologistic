@@ -49,8 +49,9 @@ const activeRoutes: Record<string, number> = {
 
 const navLinks = [
   { label: 'Home', href: '/' },
+  { label: 'About Us', href: '/about-us' },
   { label: 'How It Works', href: '/how-it-works' },
-  { label: 'Gallery', href: '/gallery' },
+  // { label: 'Gallery', href: '/gallery' },
   { label: 'Intake Hub', href: '/intake-hub' },
 ]
 
@@ -79,7 +80,7 @@ export default function Header() {
   return (
     <header
       className={cn(
-        'fixed top-0 inset-x-0 z-50 transition-all duration-500',
+        'fixed top-0 inset-x-0 z-50 transition-all duration-300',
         scrolled
           ? 'bg-[#0E0D0C]/92 backdrop-blur-xl border-b border-[hsl(38_16%_14%)] py-3 shadow-[0_8px_32px_rgba(0,0,0,0.5)]'
           : 'py-5 bg-transparent'
@@ -217,10 +218,11 @@ export default function Header() {
 
           {/* Other links */}
           {[
+            { label: 'About Us', href: '/about-us' },
             { label: 'How It Works', href: '/how-it-works' },
             { label: 'Global Freight', href: '/global-freight' },
-            { label: 'Gallery', href: '/gallery' },
-            { label: 'Intake Hub', href: '/intake-hub' },
+            // { label: 'Gallery', href: '/gallery' },
+            // { label: 'Intake Hub', href: '/intake-hub' },
           ].map((l) => (
             <Link
               key={l.href}
